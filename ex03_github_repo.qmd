@@ -1,0 +1,31 @@
+---
+title: "Creating a github rep"
+format: html
+editor: visual
+---
+
+In this final exercise, you will create a github repository, from which you could share your code and collaborate with colleagues.
+
+## Pre-work
+
+### Set up
+
+If you already are a Git and GitHub user, have a personal token saved, and can push to and pull from GitHub without having to type your password in each time, you're good to go. If not, please complete the following steps[^1].
+
+[^1]: These steps will direct you to relevant chapters from [*Happy Git with R*](https://happygitwithr.com/) by Jenny Bryan et. al. 
+
+-   [Register a free GitHub account](https://happygitwithr.com/github-acct.html#github-acct)
+-   [Install or update R and RStudio](https://happygitwithr.com/install-r-rstudio.html#install-r-rstudio)
+-   [Install Git](https://happygitwithr.com/install-git.html#install-git)
+-   [Introduce yourself to Git](https://happygitwithr.com/hello-git.html#hello-git)
+-   [Personal access token for HTTPS](https://happygitwithr.com/https-pat.html)
+-   [Connect to GitHub](https://happygitwithr.com/push-pull-github.html)
+-   [Connect RStudio to Git and GitHub](https://happygitwithr.com/rstudio-git-github.html)
+-   [Detect Git from RStudio](https://happygitwithr.com/rstudio-see-git.html)
+
+### Create your Github repository!
+
+Now create your repository and upload your final resources into github. You could do this in several ways, but the easiest is probably to start from an empty new project on Github first, as described in [this chapter](https://happygitwithr.com/new-github-first.html). 
+
+
+

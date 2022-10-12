@@ -1,0 +1,58 @@
+---
+title: "Hello, Quarto"
+output: html_document
+---
+
+This is a little exercise to
+
+## From R to Quarto!
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>. In this little exercise we are going to explore some of the differences between R and Quarto.
+
+## Meet the Penguins
+
+```{r}
+#| label: load-packages
+#| message: false
+
+library(tidyverse)
+library(palmerpenguins)
+
+```
+
+The penguins data from the [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/) package contains size measurements for 344 penguins, collected and made available by Dr. Kristen Gorman and the Palmer Station, Antarctica LTER, a member of the Long Term Ecological Research Network.
+
+The plot below shows the relationship between flipper and bill length of three types of penguins:
+
+```{r}
+#| label: visualize
+
+penguins %>% drop_na() %>% 
+  ggplot(aes(x = flipper_length_mm, y = bill_length_mm)) +
+  geom_point(aes(color = species, shape = species)) +
+  labs(
+    title = "flipper and bill length", 
+    x = "flipper length (mm)", 
+    y = "bill length (mm)", 
+    shape = "Penguin species"
+  ) + 
+  theme_minimal()
+  
+
+```
+
+## Exercises:
+
+1.  Knit your document in RMarkdown and check the result.
+
+2.  Change the file format from RMarkdown to Quarto by renaming it, changing the extension from `rmd` to `qmd`. Remember to change the output option in the YAML to `format: html`. Then simply render the result. (tick render on save)
+
+3.  Change the format to a pdf.
+
+4.  Hide the code in two stages. First, by adding the option on `echo` on one of the chunks. Second, by adding a global option via the `execute:` option in the yaml.
+
+5.  Change the output to presentation slides by changing the format to `revealjs`.
+
+6.  Place the plot on a separate slide by adding a header. Use the `/` character and explore the different types of objects you can insert in your document.
+
+7.  Add another document and call it `index.qml`, then add a `quarto.yml` file, restart your session and create a web-site!
