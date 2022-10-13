@@ -3,7 +3,8 @@ title: "Hello, Quarto"
 output: html_document
 ---
 
-This is a little exercise to
+This is a little exercise designed to explore some of the practical differences between RMarkdown and Quatro. Enjoy!!! 
+
 
 ## From R to Quarto!
 
