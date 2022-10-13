@@ -29,7 +29,7 @@ Otherwise, you may want to use rstudio cloud via the following [link](https://rs
 
 ------------------------------------------------------------------------
 
-This repository contains materials from the "Designing the Data Science Classroom" workshop at rstudio::conf(2022). See [https://rstd.io/teach-ds-conf22](rstd.io/teach-ds-conf22) for rendered workshop materials.
+This repository contains materials from the "Designing the Data Science Classroom" workshop at rstudio::conf(2022). See [original](https://rstd.io/teach-ds-conf22) workshop materials.
 
 ------------------------------------------------------------------------
 
