@@ -21,7 +21,7 @@ In this case, you should also install the following packages from CRAN:
     install.packages("devtools")
     install.packages("lubridate")
     install.packages("tidyverse")
-    install.packages("tidymodels")
+    install.packages("palmerpenguins")
     install.packages("unvotes")
     install.packages("usethis")
 
