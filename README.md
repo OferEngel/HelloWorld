@@ -16,7 +16,7 @@ You may use the resources in one of two possible ways.
 
 If you choose to use your local R and RStudio install for the workshop (RStudio version 2022.01 or more and R version 2.1 or more), you would need to [install git](https://github.com/git-guides/install-git) on your local machine and then clone this repo locally.
 
-You would also want to install the following packages from CRAN:
+You would also want to install [RTools](https://cran.r-project.org/bin/windows/Rtools/rtools40.html) as well as the following packages from CRAN:
 
     install.packages("devtools")
     install.packages("lubridate")
