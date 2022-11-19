@@ -1,0 +1,402 @@
+---
+title: "lab 1: solutions"
+editor: visual
+editor_options: 
+  chunk_output_type: console
+format: html
+author: Group 17, Ofer Engel et al.
+execute: 
+  echo: false
+  warning: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)  # tidy data, pipes etc...
+library(broom)   # output for regression
+library(mosaic)  # favstats 
+library(GGally)  # bivariate plots
+library(modelsummary)  # regression estimates, sd.errors
+library(ggfortify)     # regression diagnostics (autoplot)
+library(gridExtra)
+
+bank <- read.csv("https://oferengel.quarto.pub/umcg-beyond-mlr/data/banksalary.csv")
+
+```
+
+# Core Exercise: Gender discrimination in bank salaries
+
+In the 1970's, Harris Trust was sued for gender discrimination in the salaries it paid its employees. One approach to addressing this issue was to examine the starting salaries of all skilled, entry-level clerical workers between 1965 and 1975.
+
+### part a
+
+Identify observational units, the response variable, and explanatory variables.
+
+**Answer:** Observational units 👀 = XXXXXXX bank workers 👷;\
+response = starting salary `bsal` 💰;\
+explanatory = sex, experience, XXXXX, XXXXXXX,
+
+### part b
+
+The mean starting salary of male workers (\$5957) was 16% higher than the mean starting salary of female workers (\$5139). Confirm these mean salaries. Is this enough evidence to conclude gender discrimination exists? If not, what further evidence would you need?
+
+**Answer:** To answer, let us look at some statistics and distribution plots 💹
+
+```{r}
+#| label: part b - explore
+#| eval: false
+
+# This chunk is just me playing around. 
+# I do not want it to be evaluated or to be evaluated as part of my report
+# therefore I set the `eval` property to `false`. 
+
+bank %>%  head() # print first 6 rows
+
+# Generate relevant summary statistics for response variable
+# library(broom)
+favstats(~bsal, data=bank)
+
+# Look at the conditioned relationship between sex and start-salary
+favstats(~ bsal | sex, data = bank)
+
+####
+# Income distribution by sex
+ggplot(data = bank, 
+       aes(x = bsal, 
+           y = after_stat(density), 
+           fill = sex)) + 
+  geom_density(alpha=.4, color=NA)
+
+ggplot(bank, aes(x = sex, y = bsal)) + 
+  geom_violin()
+
+
+ggplot(data = bank) +
+  geom_histogram( aes(x = bsal), bins = 20) +
+  facet_wrap(~ sex, nrow = 2)
+
+```
+
+```{r}
+#| label: part b - mean salary
+#| echo: true
+
+# I want this chunk to show in my final report because I want to show 
+# my readers how I found the mean salary of males and females. 
+mn.bsal <- favstats(~ bsal | sex, data = bank)$mean
+
+```
+
+**Results:** The mean starting salary of male workers is XXXXX, whereas the mean starting salary for a female worker is XXXXX. The average pay for males is higher than for females.
+
+But this, in itself, is not enough to conclude that there is gender discrimination. We must first rule out the possibility that the difference can be explained by variability due to sampling. How do we consider variability -- how much do male and female salaries vary? For example, the 25th percentile for males is approximately equal to the 75th percentile for females. Let us run a two-sample t-test.
+
+```{r}
+#| echo: true
+#| label: part b - run tests
+
+# Is the difference between the sexes significant
+t.test(bsal ~ sex, data = bank) 
+
+model0 = lm(bsal ~ sex, data = bank)
+
+# There are two ways to show the results. 
+summary(model0) # The traditional way
+tidy(model0, conf.int = TRUE) # The tidy way
+
+```
+
+These results suggest that any differences in mean salaries are above and beyond underlying variability among employees.
+
+Next, and importantly, we must control for other factors which could explain higher starting salaries.
+
+### part c
+
+How would you expect age, experience, and education to be related to starting salary? Generate appropriate exploratory plots; are the relationships as you expected? What implications does this have for modelling?
+
+**Answer:** Let us look at the relationship between age, sex and starting salary.
+
+```{r}
+#| label: part c - graphs 
+#| eval: false
+
+# Explaining response (salary) by the covariates 
+# covariates: age, experience and education
+# How are covariates related to response?
+# 
+# salary explained by age
+bank %>% ggplot(aes(x=____, y=bsal)) + 
+  geom_point() + geom_smooth(method = lm) + 
+  labs(title="salary vs. age", 
+       x="age (years)", 
+       y="start salary")
+
+# salary, explained by experience
+bank %>% ggplot(aes(x=____, y=bsal)) + 
+  geom_point() + geom_smooth(method = lm) + 
+  labs(title="salary vs. experience", 
+       x="experience (years)", 
+       y="start salary")
+
+# salary, by education
+bank %>% ggplot(aes(x=____, y=bsal)) + 
+  geom_point() + 
+  geom_smooth(method = lm) + 
+  labs(title="salary vs. education", 
+       x="education", 
+       y="start salary")
+
+```
+
+**Results:** Higher salary is associated with higher age and more experience (but the relationship appears weak). It is also associated with more education (here a stronger relationship).
+
+Maybe males earn more because they have more education? We need to add the education variable to our linear model. If after adding education we will still have an effect of sex on salary, we rule out the possibility that males earn more because of education.
+
+### part d
+
+Why might it be important to control for seniority 🧓 (number of years with the bank) if we are only concerned with the salary when the worker started?
+
+**Answer:** Let us explore the relationship between salary and seniority
+
+```{r}
+#| eval: false
+#| label: part d - seniority
+
+# How does seniority (today) explain the starting salary
+# Notice that this sounds like a case of reverse 
+# causality, because the starting salary came prior to the
+# seniority!
+bank %>% ggplot(aes(x=senior, y=bsal)) + 
+  geom_point() + 
+  geom_smooth(method = lm) + 
+  labs(title="salary vs. seniority", 
+       x="seniority", 
+       y="start salary")
+
+```
+
+We get a negative relationship, where more seniority is associated with a lower starting salary. Why is that? Maybe starting salaries from long ago were lower than today. This may have something to do with inflation 📈.
+
+Maybe more males were hired recently, and therefore we it only appears that males were offered a higher salary? To rule this out, we need to add seniority to our model, thus controlling for inflation.
+
+Notice how we try to find alternative explanations and reject them. This is like medical diagnosis: we keep trying to rule out explanations, rejecting some null hypothesis, wiping out the dust in order to reach purity of truth 🏆.
+
+### part e
+
+By referring to exploratory plots and summary statistics, are any explanatory variables (including sex) closely related to each other? What implications does this have for modelling?
+
+**Answer:** Let us look at some stats and plots...
+
+```{r}
+#| eval: false
+#| label: part d - seniority
+
+# How are explanatory variables related to sex?
+# Let us start with age
+favstats(~ age/12 | sex, data = bank)
+ggplot(bank, aes(y = sex, x = age/12)) + 
+  geom_boxplot() 
+
+
+# How about experience
+favstats(~ exper | sex, data = bank)
+ggplot(bank, aes(y = sex, x = exper)) +
+  geom_boxplot() 
+
+# education
+favstats(~ educ | sex, data = bank)
+ggplot(bank, aes(y = sex, x = educ)) +
+  geom_boxplot() 
+
+# seniority
+favstats(~ senior | sex, data = bank)
+ggplot(bank, aes(y = sex, x = senior)) +
+    geom_boxplot() 
+
+
+# Finally, let us look at all the pairs and how they are related to each other?
+bank %>% select(bsal, age, exper, educ, senior, sex) %>% 
+  ggpairs() # matrix of scatterplots
+
+
+```
+
+Age vs experience has r=.80; since they are highly correlated, we may not need both in our model. There are no other extremely worrisome associations between predictors, although there is a tendency for males to be younger and more educated, which means it will be important to adjust for age and education when evaluating differences between males and females.
+
+
+### part f
+
+Fit a simple linear regression model with starting salary as the response and experience as the sole explanatory variable (Model 1). Interpret the intercept and slope of this model; also interpret the R-squared value. Is there a significant relationship between experience and starting salary?
+
+```{r}
+#| eval: false
+#| label: part f - our first model
+
+mdl1 <- lm(bsal~exper, bank) 
+msummary(mdl1, stars=TRUE, 
+         estimate="{estimate} ({std.error}){stars}",
+         statistic="p={p.value} [{conf.low}, {conf.high}]")
+```
+
+**Answer:**
+
+-   Intercept: XXXXXX = mean starting salary if no experience
+
+-   Slope: XXXX = mean increase in starting salary for each 1 year increase in experience
+
+-   $R^2$: XXXX% = XXXX% of person-to-person variability in starting salary can be explained by differences in experience
+
+-   Significance: We do not have statistically significant evidence (t = XXX/XXX, p =XXXX) that starting salary is associated with experience.
+
+### part g
+
+Does Model 1 meet all linear least squares regression assumptions? List each assumption and how you decided if it was met or not.
+
+```{r}
+#| eval: false
+#| label: part g - diagnostics
+
+# exploring the diagnostics of our first model
+autoplot(mdl1)
+```
+
+**Answer:** 
+- Linearity = residuals vs fitted values has small curvature around 0 -- slight evidence of quadratic effect. 
+
+- Independence = from data collection. Violation could occur with a cohort effect, when everyone recruited at the same year got the same wages, for example. 
+
+- Normality = normal QQ plot is straight line, except for one outlier on the high end. 
+
+- E = Residuals vs. fitted and scale-location plot is basically flat. Plus, residuals vs. leverage values show few leverage or potentially influential points
+
+### part h
+
+Is a model with all 4 confounding variables (Model 2, with `senior`, `educ`, `exper`, and `age`) better than a model with just experience (Model 1)? Justify with an appropriate significance test in addition to summary statistics of model performance.
+
+```{r}
+#| eval: false
+#| label: part h - diagnostics
+
+# second model
+mdl2 <- lm(bsal ~ sex + exper + senior + educ + age, bank) 
+msummary(list(mdl1, mdl2), stars=TRUE)
+anova(mdl1, mdl2, test="F")
+autoplot(mdl2)
+```
+
+**Answer:** All indicators improved, increasing $R^2$, adjusted $R^2$. Decrease of AIC, BIC.
+
+Based on a nested F-test, we have statistically significant evidence (F = 12.456, p \< .001) that the larger model outperforms the smaller model.
+
+Finally, the residual plots show better adherence to the LINE conditions in the larger model.
+
+
+### part i 
+
+You should have noticed that the term for age was not significant in Model 2. What does this imply about age and about future modeling steps?
+
+**Answer:** We can likely remove age in future modeling steps. Age is not significantly associated with starting salary after accounting for seniority, education, and experience.
+
+
+### part j 
+
+
+Generate an appropriate coded scatter-plot to examine a potential age-by-experience interaction. How would you describe the nature of this interaction?
+
+```{r}
+#| eval: false
+#| label: part j - interaction
+
+
+md.exper <- median(bank$exper)
+
+bank.expDummy <- bank %>% 
+  mutate(expDummy = ifelse(exper < ______,"low","high")) 
+
+bank.expDummy %>% 
+  ggplot(aes(x=age/12, y=bsal, color=expDummy)) + 
+  geom_point() + 
+  geom_smooth(method = lm) + 
+  labs(title="salary vs. age", x="age", y="start salary")
+
+
+
+```
+
+**Answer:** The coded scatter-plot shows some evidence of an interaction, suggesting a negative association between age and starting salary for those with higher experience, but little association for those with lower experience. This interaction appears to be statistically significant.
+
+
+### part k 
+
+A potential final model would contain terms for seniority, education, and experience in addition to sex. Does this model meet all regression assumptions? State a 95% confidence interval for sex and interpret this interval carefully in the context of the problem.
+
+```{r}
+#| eval: false
+#| label: part k - third model
+# A potential final model would contain terms for seniority, education, and experience in addition to sex
+mdl3 <- lm(bsal ~ 
+             sex + exper + senior + educ + age + age:exper, bank) 
+msummary(list(mdl1, mdl2, mdl3), stars=TRUE)
+tidy(mdl3,conf.int = TRUE)
+anova(mdl2, mdl3)
+
+# diagnostics
+autoplot(mdl3)
+
+```
+
+Our 95% confident interval suggests that males with similar education and experience earn between \$485 and \$971 more than females, after adjusting for inflation. All LINE assumptions appear to be met by model3.
+
+
+### part l 
+
+Based on Model 3, what conclusions can be drawn about gender discrimination at Harris Trust? Do these conclusions have to be qualified at all, or are they pretty clear cut?
+
+**Answer:** Evidence of gender discrimination is pretty strong, yet we must be careful about assigning causation because this is an observational study. For example, we must be sure we have controlled for all important covariates in our analysis. In this case, there actually was a huge settlement in 1989 (first filed in 1977) that concluded similarly qualified women were given lower jobs.
+
+
+### part m 
+
+Often salary data is logged before analysis. Would you recommend logging starting salary in this study? Support your decision analytically.
+
+```{r}
+#| eval: false
+#| label: part m - log transforming the model
+
+# Should beginning salary be log transformed?
+bank <- bank %>% mutate(logbsal = log(bsal))
+
+hist1 <- ggplot(bank, aes(bsal)) + 
+  geom_histogram(bins = 10)
+hist2 <- ggplot(bank, aes(logbsal)) + 
+  geom_histogram(bins = 10)
+
+
+grid.arrange(hist1, hist2, ncol=2)
+
+# Look at marginal relationship between sex and beginning salary
+mdl3a <-  lm(logbsal ~ 
+             sex + exper + senior + educ + age + age:exper, 
+          data = bank)
+
+msummary(mdl3a, stars=TRUE)
+
+# Run diagnostics here...
+
+
+```
+
+**Answer** `Log(bsal)` is slightly more normal, but not a huge improvement. Often salaries in general are right-skewed, but not lower level starting salaries. Note that we cannot compare *cannot* the models since the response values are different.
+
+
+n.  Regardless of your answer to the previous question, provide an interpretation for the coefficient for the male coefficient in a modified Model 3 after logging starting salary.
+
+**Answer** Males had XXXXX% (exp(XXXXX) = XXXXX) higher  salaries than females,after controlling for seniority, education, and experience (diagnostics look
+good for both 3 and 3a).
+
+o.  Build your own final model for this study and justify the selection of your final model. You might consider interactions with gender, since those terms could show that discrimination is stronger among certain workers. Based on your final model, do you find evidence of gender discrimination at Harris Trust?
+
+
+**Answer**  TBD...

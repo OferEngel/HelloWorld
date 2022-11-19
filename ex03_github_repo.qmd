@@ -12,7 +12,7 @@ In this final exercise, you will create a github repository, from which you coul
 
 If you already are a Git and GitHub user, have a personal token saved, and can push to and pull from GitHub without having to type your password in each time, you're good to go. If not, please complete the following steps[^1].
 
-[^1]: These steps will direct you to relevant chapters from [*Happy Git with R*](https://happygitwithr.com/) by Jenny Bryan et. al. 
+[^1]: These steps will direct you to relevant chapters from [*Happy Git with R*](https://happygitwithr.com/) by Jenny Bryan et. al.
 
 -   [Register a free GitHub account](https://happygitwithr.com/github-acct.html#github-acct)
 -   [Install or update R and RStudio](https://happygitwithr.com/install-r-rstudio.html#install-r-rstudio)
@@ -25,7 +25,4 @@ If you already are a Git and GitHub user, have a personal token saved, and can p
 
 ### Create your Github repository!
 
-Now create your repository and upload your final resources into github. You could do this in several ways, but the easiest is probably to start from an empty new project on Github first, as described in [this chapter](https://happygitwithr.com/new-github-first.html). 
-
-
-
+Now create your repository and upload your final resources into github. You could do this in several ways, but the easiest is probably to start from an empty new project on Github first, as described in [this chapter](https://happygitwithr.com/new-github-first.html).
