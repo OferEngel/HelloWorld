@@ -34,7 +34,7 @@ In the 1970's, Harris Trust was sued for gender discrimination in the salaries i
 
 Identify observational units, the response variable, and explanatory variables.
 
-**Answer:** Observational units 👀 = XXXXXXX bank workers 👷;\
+**Answer:** Observational units 👀 = `r nrow(bank)` bank workers 👷;\
 response = starting salary `bsal` 💰;\
 explanatory = sex, experience, XXXXX, XXXXXXX,
 
@@ -194,7 +194,7 @@ By referring to exploratory plots and summary statistics, are any explanatory va
 
 ```{r}
 #| eval: false
-#| label: part d - seniority
+#| label: part e - covariates
 
 # How are explanatory variables related to sex?
 # Let us start with age
