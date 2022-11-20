@@ -48,7 +48,8 @@ The mean starting salary of male workers (\$5957) was 16% higher than the mean s
 #| label: part b - explore
 #| eval: false
 
-# This chunk is just me playing around. 
+# This chunk is just for playing around 
+# notice the eval option is set to false. 
 # I do not want it to be evaluated or to be evaluated as part of my report
 # therefore I set the `eval` property to `false`. 
 
@@ -105,6 +106,8 @@ model0 = lm(bsal ~ sex, data = bank)
 # There are two ways to show the results. 
 summary(model0) # The traditional way
 tidy(model0, conf.int = TRUE) # The tidy way
+ggcoef(tidy(model0, conf.int = TRUE)) + 
+  scale_x_continuous(breaks=seq(0,6000,by=500))
 
 ```
 
@@ -225,7 +228,6 @@ bank %>% select(bsal, age, exper, educ, senior, sex) %>%
 
 Age vs experience has r=.80; since they are highly correlated, we may not need both in our model. There are no other extremely worrisome associations between predictors, although there is a tendency for males to be younger and more educated, which means it will be important to adjust for age and education when evaluating differences between males and females.
 
-
 ### part f
 
 Fit a simple linear regression model with starting salary as the response and experience as the sole explanatory variable (Model 1). Interpret the intercept and slope of this model; also interpret the R-squared value. Is there a significant relationship between experience and starting salary?
@@ -262,14 +264,13 @@ Does Model 1 meet all linear least squares regression assumptions? List each ass
 autoplot(mdl1)
 ```
 
-**Answer:** 
-- Linearity = residuals vs fitted values has small curvature around 0 -- slight evidence of quadratic effect. 
+**Answer:** - Linearity = residuals vs fitted values has small curvature around 0 -- slight evidence of quadratic effect.
 
-- Independence = from data collection. Violation could occur with a cohort effect, when everyone recruited at the same year got the same wages, for example. 
+-   Independence = from data collection. Violation could occur with a cohort effect, when everyone recruited at the same year got the same wages, for example.
 
-- Normality = normal QQ plot is straight line, except for one outlier on the high end. 
+-   Normality = normal QQ plot is straight line, except for one outlier on the high end.
 
-- E = Residuals vs. fitted and scale-location plot is basically flat. Plus, residuals vs. leverage values show few leverage or potentially influential points
+-   E = Residuals vs. fitted and scale-location plot is basically flat. Plus, residuals vs. leverage values show few leverage or potentially influential points
 
 ### part h
 
@@ -292,16 +293,13 @@ Based on a nested F-test, we have statistically significant evidence (F = 12.456
 
 Finally, the residual plots show better adherence to the LINE conditions in the larger model.
 
-
-### part i 
+### part i
 
 You should have noticed that the term for age was not significant in Model 2. What does this imply about age and about future modeling steps?
 
 **Answer:** We can likely remove age in future modeling steps. Age is not significantly associated with starting salary after accounting for seniority, education, and experience.
 
-
-### part j 
-
+### part j
 
 Generate an appropriate coded scatter-plot to examine a potential age-by-experience interaction. How would you describe the nature of this interaction?
 
@@ -327,8 +325,7 @@ bank.expDummy %>%
 
 **Answer:** The coded scatter-plot shows some evidence of an interaction, suggesting a negative association between age and starting salary for those with higher experience, but little association for those with lower experience. This interaction appears to be statistically significant.
 
-
-### part k 
+### part k
 
 A potential final model would contain terms for seniority, education, and experience in addition to sex. Does this model meet all regression assumptions? State a 95% confidence interval for sex and interpret this interval carefully in the context of the problem.
 
@@ -342,6 +339,8 @@ msummary(list(mdl1, mdl2, mdl3), stars=TRUE)
 tidy(mdl3,conf.int = TRUE)
 anova(mdl2, mdl3)
 
+ggcoef(__________), sort = "ascending") 
+
 # diagnostics
 autoplot(mdl3)
 
@@ -349,15 +348,13 @@ autoplot(mdl3)
 
 Our 95% confident interval suggests that males with similar education and experience earn between \$485 and \$971 more than females, after adjusting for inflation. All LINE assumptions appear to be met by model3.
 
-
-### part l 
+### part l
 
 Based on Model 3, what conclusions can be drawn about gender discrimination at Harris Trust? Do these conclusions have to be qualified at all, or are they pretty clear cut?
 
 **Answer:** Evidence of gender discrimination is pretty strong, yet we must be careful about assigning causation because this is an observational study. For example, we must be sure we have controlled for all important covariates in our analysis. In this case, there actually was a huge settlement in 1989 (first filed in 1977) that concluded similarly qualified women were given lower jobs.
 
-
-### part m 
+### part m
 
 Often salary data is logged before analysis. Would you recommend logging starting salary in this study? Support your decision analytically.
 
@@ -390,13 +387,10 @@ msummary(mdl3a, stars=TRUE)
 
 **Answer** `Log(bsal)` is slightly more normal, but not a huge improvement. Often salaries in general are right-skewed, but not lower level starting salaries. Note that we cannot compare *cannot* the models since the response values are different.
 
-
 n.  Regardless of your answer to the previous question, provide an interpretation for the coefficient for the male coefficient in a modified Model 3 after logging starting salary.
 
-**Answer** Males had XXXXX% (exp(XXXXX) = XXXXX) higher  salaries than females,after controlling for seniority, education, and experience (diagnostics look
-good for both 3 and 3a).
+**Answer** Males had XXXXX% (exp(XXXXX) = XXXXX) higher salaries than females,after controlling for seniority, education, and experience (diagnostics look good for both 3 and 3a).
 
 o.  Build your own final model for this study and justify the selection of your final model. You might consider interactions with gender, since those terms could show that discrimination is stronger among certain workers. Based on your final model, do you find evidence of gender discrimination at Harris Trust?
 
-
-**Answer**  TBD...
+**Answer** TBD...
